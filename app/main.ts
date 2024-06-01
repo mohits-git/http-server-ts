@@ -1,14 +1,25 @@
 import * as net from 'net';
 
 const server = net.createServer((socket) => {
-    socket.on('data', (data) => {
-        const request: string = data.toString();
+    socket.on('data', (data: Buffer) => {
+        const request = data.toString();
+        console.log('----------Request----------')
+        console.log(request)
         const path = request.split(' ')[1];
 
         if (path.startsWith('/echo/')) {
             const str = path.substring(6);
             const response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
             socket.write(response);
+        }
+        else if (path === "/user-agent") {
+            const arr = request.split('\r\n');
+            const userAgentHeader = arr.find((ele) => ele.includes('User-Agent:'));
+            if (userAgentHeader) {
+                const userAgent = userAgentHeader?.split(' ')[1];
+                const response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`;
+                socket.write(response);
+            }
         }
         else {
             const response = path === '/' ? 'HTTP/1.1 200 OK\r\n\r\n' : 'HTTP/1.1 404 Not Found\r\n\r\n';
