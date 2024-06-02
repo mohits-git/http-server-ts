@@ -15,8 +15,15 @@ const server = net.createServer((socket) => {
         const path = request.split(' ')[1];
 
         if (path.startsWith('/echo/')) {
+            const arr = request.split('\r\n');
+            const acceptEncodingHeader = arr.find((ele) => ele.toLowerCase().includes('accept-encoding:'));
             const str = path.substring(6);
-            const response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
+            let response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
+            if(acceptEncodingHeader) {
+                const encodingType = acceptEncodingHeader.split(' ')[1];
+                if(encodingType === "gzip")
+                    response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
+            }
             socket.write(response);
         }
         else if (path === "/user-agent") {
