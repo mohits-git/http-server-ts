@@ -24,11 +24,17 @@ const server = net.createServer((socket) => {
                 const encodingTypes = acceptEncodingHeader.split(/, |: /);
                 const hasGzip = encodingTypes.find((encodingType) => encodingType === "gzip");
                 if (hasGzip === "gzip") {
-                    const gzippedStr = gzipSync(str).toString('hex');
-                    response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${gzippedStr.length}\r\n\r\n${gzippedStr}`;
+                    const buf = Buffer.from(str, 'utf8');
+                    const gzippedStr = gzipSync(buf);
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${gzippedStr.length}\r\n\r\n`);
+                    socket.write(gzippedStr);
+                } else {
+                    socket.write(response);
                 }
             }
-            socket.write(response);
+            else {
+                socket.write(response);
+            }
         }
         else if (path === "/user-agent") {
             const arr = request.split('\r\n');
