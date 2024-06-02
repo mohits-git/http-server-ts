@@ -1,6 +1,7 @@
 import * as net from 'net';
 import fs from 'fs';
 import pathNode from 'path';
+import { gzipSync } from 'zlib';
 
 let dir: null | string = null;
 if (process.argv[2] === '--directory') {
@@ -19,10 +20,13 @@ const server = net.createServer((socket) => {
             const acceptEncodingHeader = arr.find((ele) => ele.toLowerCase().includes('accept-encoding:'));
             const str = path.substring(6);
             let response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
-            if(acceptEncodingHeader) {
+            if (acceptEncodingHeader) {
                 const encodingTypes = acceptEncodingHeader.split(/, |: /);
                 const hasGzip = encodingTypes.find((encodingType) => encodingType === "gzip");
-                if(hasGzip === "gzip") response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
+                if (hasGzip === "gzip") {
+                    const gzippedStr = gzipSync(str).toString('hex');
+                    response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${gzippedStr.length}\r\n\r\n${gzippedStr}`;
+                }
             }
             socket.write(response);
         }
