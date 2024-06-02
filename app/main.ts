@@ -20,9 +20,9 @@ const server = net.createServer((socket) => {
             const str = path.substring(6);
             let response = `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
             if(acceptEncodingHeader) {
-                const encodingType = acceptEncodingHeader.split(' ')[1];
-                if(encodingType === "gzip")
-                    response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
+                const encodingTypes = acceptEncodingHeader.split(/, |: /);
+                const hasGzip = encodingTypes.find((encodingType) => encodingType === "gzip");
+                if(hasGzip === "gzip") response = `HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`;
             }
             socket.write(response);
         }
