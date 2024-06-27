@@ -1,4 +1,6 @@
-This is a simple HTTP server built with Typescript. Guided by the CodeCrafters - ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+## HTTP Server with Typescript from Scratch
+
+This is a simple HTTP server built with Typescript.
 
 [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
 protocol that powers the web. I built a HTTP/1.1 server
@@ -14,4 +16,4 @@ and more.
    - Simply parses the upcoming request and `request-target` and `method` (GET or POST) and send response accordingly.
    - parse the request Headers and Send back Headers with response.
    - Send back the HTTP body data.
-- We have also implemented the HTTP compression for the HTTP response body with `gzip` via [`node:zlib`](https://nodejs.org/api/zlib.html#zlib) API
+- Also implemented the HTTP compression for the HTTP response body with `gzip` via [`node:zlib`](https://nodejs.org/api/zlib.html#zlib) API
